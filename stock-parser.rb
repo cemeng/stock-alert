@@ -1,9 +1,7 @@
 require 'csv'
 require 'sequel'
-
-# we could read and store in the database
-# 1. store data in the database
-# 2. do some crunching daily - send email
+require 'net/http'
+require 'uri'
 
 DB = Sequel.connect('mysql2://root@localhost/financial')
 
@@ -30,11 +28,15 @@ def delete_stocks_table
   DB.execute('DROP TABLE stocks')
 end
 
+def download(date:)
+  uri = URI.parse("http://float.com.au/download/#{date}.csv")
+  Net::HTTP.get_response(uri).response.body
+end
+
 def import(date: nil)
-  # import from float.com.au -> put it on data
   stocks = DB[:stocks]
-  CSV.read('data/20170619.csv').each do |row|
-    # ["1AD", "20170619", "0.245", "0.245", "0.245", "0.245", "10000"]
+  stocks_csv = download(date: date) # offline: CSV.read('data/20170619.csv')
+  CSV.parse(stocks_csv).each do |row|
     stocks.insert(code: row[0],
                   date: row[1],
                   open: row[2],
@@ -44,3 +46,8 @@ def import(date: nil)
                   volume: row[6])
   end
 end
+
+puts "importing #{ARGV[0]}"
+# check if date is weekend or public holiday don't do it
+import(date: ARGV[0])
+puts "importing finished"
