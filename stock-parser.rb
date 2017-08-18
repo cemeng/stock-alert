@@ -1,9 +1,12 @@
 require 'csv'
+require 'dotenv'
 require 'sequel'
 require 'net/http'
 require 'uri'
 
-DB = Sequel.connect('mysql2://root@localhost/financial')
+Dotenv.load
+
+DB = Sequel.connect("mysql2://#{ENV['DB_USER']}:#{ENV['DB_PASSWORD']}@localhost/financial")
 
 def create_db
   DB.execute('CREATE DATABASE IF NOT EXISTS financial')
