@@ -4,6 +4,7 @@ GEM
     coderay (1.1.1)
     dotenv (2.1.1)
     method_source (0.8.2)
+    mysql2 (0.4.4)
     pry (0.10.4)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -16,6 +17,7 @@ PLATFORMS
 
 DEPENDENCIES
   dotenv
+  mysql2
   pry
   sequel
 
